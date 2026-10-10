@@ -1,0 +1,70 @@
+name: Import COMPROMISSO 0.1.4 and build
+on:
+  push:
+    paths:
+      - 'bootstrap/READY'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  import-and-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Validate and unpack reviewed source archive
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import base64, io, tarfile
+          root=Path.cwd()
+          parts=sorted((root/'bootstrap').glob('part-*.txt'))
+          assert len(parts)==7, f'Expected seven upload parts, got {len(parts)}'
+          archive=base64.b64decode(b''.join(p.read_bytes() for p in parts),validate=True)
+          with tarfile.open(fileobj=io.BytesIO(archive),mode='r:xz') as tar:
+              members=tar.getmembers()
+              for m in members:
+                  dest=(root/m.name).resolve()
+                  if not dest.is_relative_to(root.resolve()) or not (m.isfile() or m.isdir()):
+                      raise ValueError(f'Unsafe archive member: {m.name}')
+              tar.extractall(root,filter='data')
+          assert (root/'app/src/main/AndroidManifest.xml').is_file()
+          assert (root/'.github/workflows/android.yml').is_file()
+          PY
+          python3 scripts/security_audit.py
+      - name: Commit imported source and remove bootstrap material
+        run: |
+          rm -rf bootstrap .github/workflows/import.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'feat: publish COMPROMISSO Android 0.1.4 source and CI'
+          git push origin HEAD:main
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.6.0'
+      - name: Install Android SDK
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager 'platforms;android-37' 'build-tools;36.0.0' 'platform-tools'
+      - name: Run JVM unit tests
+        run: gradle testDebugUnitTest
+      - name: Android lint
+        run: gradle lintDebug
+      - name: Build APK
+        run: gradle assembleDebug
+      - name: Verify APK permissions
+        run: python3 scripts/apk_permission_audit.py "$ANDROID_HOME/build-tools/36.0.0/aapt" app/build/outputs/apk/debug/app-debug.apk
+      - name: Upload experimental APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: COMPROMISSO-0.1.4-debug-UNVERIFIED
+          path: app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 7
