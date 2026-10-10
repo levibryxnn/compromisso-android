@@ -2,7 +2,7 @@ name: Import COMPROMISSO 0.1.4 and build
 on:
   push:
     paths:
-      - 'bootstrap/READY'
+      - 'COMPROMISSO-Android-0.1.4-codigo-fonte.zip'
   workflow_dispatch:
 permissions:
   contents: write
@@ -14,30 +14,42 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: true
-      - name: Validate and unpack reviewed source archive
+      - name: Validate and unpack the source archive
         shell: bash
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          import base64, io, tarfile
-          root=Path.cwd()
-          parts=sorted((root/'bootstrap').glob('part-*.txt'))
-          assert len(parts)==7, f'Expected seven upload parts, got {len(parts)}'
-          archive=base64.b64decode(b''.join(p.read_bytes() for p in parts),validate=True)
-          with tarfile.open(fileobj=io.BytesIO(archive),mode='r:xz') as tar:
-              members=tar.getmembers()
-              for m in members:
-                  dest=(root/m.name).resolve()
-                  if not dest.is_relative_to(root.resolve()) or not (m.isfile() or m.isdir()):
-                      raise ValueError(f'Unsafe archive member: {m.name}')
-              tar.extractall(root,filter='data')
-          assert (root/'app/src/main/AndroidManifest.xml').is_file()
-          assert (root/'.github/workflows/android.yml').is_file()
+          import zipfile, shutil, stat
+          root = Path.cwd().resolve()
+          archive = root / 'COMPROMISSO-Android-0.1.4-codigo-fonte.zip'
+          if not archive.is_file():
+              raise RuntimeError('Upload the version 0.1.4 ZIP to the repository root first.')
+          with zipfile.ZipFile(archive) as z:
+              bad = z.testzip()
+              if bad: raise ValueError(f'Corrupt member: {bad}')
+              for m in z.infolist():
+                  name = m.filename
+                  prefix = 'compromisso-android/'
+                  if not name.startswith(prefix):
+                      raise ValueError(f'Unexpected archive root: {name}')
+                  relative = name[len(prefix):]
+                  if not relative: continue
+                  destination = (root / relative).resolve()
+                  mode = (m.external_attr >> 16) & 0o170000
+                  if not destination.is_relative_to(root) or mode == stat.S_IFLNK:
+                      raise ValueError(f'Unsafe archive member: {name}')
+                  if m.is_dir(): destination.mkdir(parents=True, exist_ok=True)
+                  else:
+                      destination.parent.mkdir(parents=True, exist_ok=True)
+                      with z.open(m) as inp, destination.open('wb') as out:
+                          shutil.copyfileobj(inp, out)
+          assert (root / 'app/src/main/AndroidManifest.xml').is_file()
+          assert (root / '.github/workflows/android.yml').is_file()
           PY
           python3 scripts/security_audit.py
-      - name: Commit imported source and remove bootstrap material
+      - name: Publish imported source and remove upload artifacts
         run: |
-          rm -rf bootstrap .github/workflows/import.yml
+          rm -f COMPROMISSO-Android-0.1.4-codigo-fonte.zip .github/workflows/import.yml
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
@@ -54,13 +66,13 @@ jobs:
         run: |
           yes | sdkmanager --licenses >/dev/null || true
           sdkmanager 'platforms;android-37' 'build-tools;36.0.0' 'platform-tools'
-      - name: Run JVM unit tests
+      - name: Run JVM tests
         run: gradle testDebugUnitTest
-      - name: Android lint
+      - name: Run Android Lint
         run: gradle lintDebug
-      - name: Build APK
+      - name: Build Android APK
         run: gradle assembleDebug
-      - name: Verify APK permissions
+      - name: Audit APK permissions
         run: python3 scripts/apk_permission_audit.py "$ANDROID_HOME/build-tools/36.0.0/aapt" app/build/outputs/apk/debug/app-debug.apk
       - name: Upload experimental APK
         uses: actions/upload-artifact@v4
