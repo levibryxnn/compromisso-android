@@ -74,6 +74,12 @@ jobs:
         run: gradle assembleDebug
       - name: Audit APK permissions
         run: python3 scripts/apk_permission_audit.py "$ANDROID_HOME/build-tools/36.0.0/aapt" app/build/outputs/apk/debug/app-debug.apk
+      - name: Upload experimental APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: COMPROMISSO-0.1.4-debug-UNVERIFIED
+          path: app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 7
       - name: Enable KVM for Android Emulator
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -96,10 +102,4 @@ jobs:
             app/build/reports/androidTests/
             app/build/outputs/androidTest-results/
           if-no-files-found: ignore
-          retention-days: 7
-      - name: Upload experimental APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: COMPROMISSO-0.1.4-debug-UNVERIFIED
-          path: app/build/outputs/apk/debug/app-debug.apk
           retention-days: 7
