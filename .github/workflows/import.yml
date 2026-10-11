@@ -9,7 +9,7 @@ permissions:
 jobs:
   import-and-build:
     runs-on: ubuntu-latest
-    timeout-minutes: 50
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
         with:
@@ -74,6 +74,29 @@ jobs:
         run: gradle assembleDebug
       - name: Audit APK permissions
         run: python3 scripts/apk_permission_audit.py "$ANDROID_HOME/build-tools/36.0.0/aapt" app/build/outputs/apk/debug/app-debug.apk
+      - name: Enable KVM for Android Emulator
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Run Android instrumented tests in emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          script: gradle connectedDebugAndroidTest
+      - name: Upload emulator test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: COMPROMISSO-0.1.4-emulator-reports
+          path: |
+            app/build/reports/androidTests/
+            app/build/outputs/androidTest-results/
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Upload experimental APK
         uses: actions/upload-artifact@v4
         with:
