@@ -28,6 +28,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -82,6 +83,10 @@ fun PremiumHomeScreen(
     var sitesOpen by rememberSaveable { mutableStateOf(false) }
     var modeOpen by rememberSaveable { mutableStateOf(false) }
     var settingsOpen by rememberSaveable { mutableStateOf(false) }
+    val pageScroll = rememberScrollState()
+    LaunchedEffect(settingsOpen) {
+        if (settingsOpen) pageScroll.animateScrollTo(pageScroll.maxValue)
+    }
 
     val usedCategories = state.domains.filter { it.enabled }
         .mapNotNull { it.category?.trim()?.takeIf { category -> category.isNotEmpty() } }
@@ -107,7 +112,7 @@ fun PremiumHomeScreen(
         listOf(Color(0xFF0C1B2B), Midnight, Color(0xFF050D17))
     ))) {
         PremiumMountains(Modifier.fillMaxSize())
-        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())
+        Column(Modifier.fillMaxSize().verticalScroll(pageScroll)
             .padding(horizontal = 21.dp).padding(top = 25.dp, bottom = 46.dp)) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 ChristianMark(Modifier.size(42.dp))
