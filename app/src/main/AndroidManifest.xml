@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -29,11 +30,15 @@
             </intent-filter>
         </activity>
 
+        <!-- Android explicitly allows systemExempted for user-configured VpnService.
+             Lint reports the exact-alarm alternative but cannot infer VPN runtime eligibility.
+             Do not request SCHEDULE_EXACT_ALARM: it is unrelated to this app. -->
         <service
             android:name=".network.CompromissoVpnService"
             android:exported="true"
             android:foregroundServiceType="systemExempted"
-            android:permission="android.permission.BIND_VPN_SERVICE">
+            android:permission="android.permission.BIND_VPN_SERVICE"
+            tools:ignore="ForegroundServicePermission">
             <intent-filter>
                 <action android:name="android.net.VpnService" />
             </intent-filter>
