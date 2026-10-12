@@ -6,17 +6,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 private val CompromissoColors = darkColorScheme(
-    primary = Color(0xFF31E6A0),
-    onPrimary = Color(0xFF071710),
-    primaryContainer = Color(0xFF164C3B),
-    onPrimaryContainer = Color(0xFFE3F9ED),
-    background = Color(0xFF0A111B),
+    primary = Color(0xFFF1C998),
+    onPrimary = Color(0xFF071320),
+    primaryContainer = Color(0xFF3A3025),
+    onPrimaryContainer = Color(0xFFFFF0D7),
+    background = Color(0xFF071320),
     onBackground = Color(0xFFF0F5F6),
-    surface = Color(0xFF0A111B),
+    surface = Color(0xFF071320),
     onSurface = Color(0xFFF0F5F6),
-    surfaceVariant = Color(0xFF192531),
-    onSurfaceVariant = Color(0xFF9BAAB8),
-    outline = Color(0xFF506270),
+    surfaceVariant = Color(0xFF172638),
+    onSurfaceVariant = Color(0xFF9FAEBF),
+    outline = Color(0xFF46586A),
     error = Color(0xFFFFA69C),
 )
 
