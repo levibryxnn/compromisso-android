@@ -210,7 +210,7 @@ class CompromissoVpnService : VpnService() {
         val pending = PendingIntent.getActivity(this, 0, intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         val notification: Notification = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_compromisso)
+            .setSmallIcon(R.drawable.ic_compromisso_notification)
             .setContentTitle(getString(R.string.vpn_notification_title))
             .setContentText(getString(R.string.vpn_notification_text))
             .setContentIntent(pending)
