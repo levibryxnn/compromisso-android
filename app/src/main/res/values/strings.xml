@@ -4,5 +4,5 @@
     <string name="device_admin_description">Permite ativar a proteção reforçada quando o aparelho é provisionado voluntariamente como dispositivo gerenciado.</string>
     <string name="vpn_channel_name">Proteção de rede</string>
     <string name="vpn_notification_title">Compromisso ativo</string>
-    <string name="vpn_notification_text">O filtro local de domínios está em funcionamento.</string>
+    <string name="vpn_notification_text">VPN DNS local em execução. Consulte o estado do filtro no aplicativo.</string>
 </resources>
