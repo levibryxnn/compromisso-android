@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Compromisso</string>
+    <string name="device_admin_description">Permite ativar a proteção reforçada quando o aparelho é provisionado voluntariamente como dispositivo gerenciado.</string>
+    <string name="vpn_channel_name">Proteção de rede</string>
+    <string name="vpn_notification_title">Compromisso ativo</string>
+    <string name="vpn_notification_text">O filtro local de domínios está em funcionamento.</string>
+</resources>
