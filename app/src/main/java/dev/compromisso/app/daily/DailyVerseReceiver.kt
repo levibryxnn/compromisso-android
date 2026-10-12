@@ -47,7 +47,7 @@ class DailyVerseReceiver : BroadcastReceiver() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_compromisso)
+            .setSmallIcon(R.drawable.ic_compromisso_notification)
             .setContentTitle("Palavra do Dia · ${verse.reference}")
             .setContentText(verse.text)
             .setStyle(NotificationCompat.BigTextStyle().bigText(verse.text))
@@ -55,7 +55,7 @@ class DailyVerseReceiver : BroadcastReceiver() {
             .setAutoCancel(true)
             .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
             .setPublicVersion(NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_compromisso)
+                .setSmallIcon(R.drawable.ic_compromisso_notification)
                 .setContentTitle("COMPROMISSO")
                 .setContentText("Palavra do Dia disponível")
                 .build())
