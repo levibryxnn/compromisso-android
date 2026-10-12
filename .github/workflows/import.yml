@@ -106,7 +106,18 @@ jobs:
           target: google_apis
           arch: x86_64
           disable-animations: true
-          script: gradle connectedDebugAndroidTest
+          script: |
+            gradle connectedDebugAndroidTest
+            mkdir -p preview-output
+            adb pull /sdcard/Android/data/dev.compromisso.app/files/previews/compromisso-home.png preview-output/compromisso-home.png
+      - name: Upload real Android UI preview
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: COMPROMISSO-0.1.4-real-UI-preview
+          path: preview-output/compromisso-home.png
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Upload emulator test reports
         if: always()
         uses: actions/upload-artifact@v4
