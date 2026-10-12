@@ -1,4 +1,7 @@
 name: COMPROMISSO Android CI
+concurrency:
+  group: compromisso-android-${{ github.ref }}
+  cancel-in-progress: true
 on:
   push:
     branches: ['main']
@@ -58,6 +61,8 @@ jobs:
           assert (root / '.github/workflows/android.yml').is_file()
           PY
           python3 scripts/security_audit.py
+      - name: Audit source permissions, manifest and sensitive APIs
+        run: python3 scripts/security_audit.py
       - name: Publish imported source without changing workflow files
         if: steps.source.outputs.present == 'true' && github.event_name == 'push'
         run: |
@@ -88,12 +93,16 @@ jobs:
         run: gradle assembleDebug
       - name: Audit APK permissions
         run: python3 scripts/apk_permission_audit.py "$ANDROID_HOME/build-tools/36.0.0/aapt" app/build/outputs/apk/debug/app-debug.apk
+      - name: Log reproducible APK digest
+        run: sha256sum app/build/outputs/apk/debug/app-debug.apk
       - name: Upload experimental APK
         uses: actions/upload-artifact@v4
         with:
-          name: COMPROMISSO-0.1.4-debug-UNVERIFIED
+          name: COMPROMISSO-0.1.5-debug-EXPERIMENTAL
           path: app/build/outputs/apk/debug/app-debug.apk
-          retention-days: 7
+          retention-days: 14
+      - name: Compile minified release variant (unsigned)
+        run: gradle assembleRelease
       - name: Enable KVM for Android Emulator
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -114,7 +123,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: COMPROMISSO-0.1.4-real-UI-preview
+          name: COMPROMISSO-0.1.5-real-UI-preview
           path: preview-output/compromisso-home.png
           if-no-files-found: ignore
           retention-days: 7
@@ -122,7 +131,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: COMPROMISSO-0.1.4-emulator-reports
+          name: COMPROMISSO-0.1.5-emulator-reports
           path: |
             app/build/reports/androidTests/
             app/build/outputs/androidTest-results/
