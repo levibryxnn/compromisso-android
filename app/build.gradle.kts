@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "dev.compromisso.app"
-    compileSdk = 37
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "dev.compromisso.app"
