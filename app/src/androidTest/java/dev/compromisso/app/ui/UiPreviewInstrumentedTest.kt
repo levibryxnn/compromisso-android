@@ -49,6 +49,21 @@ class UiPreviewInstrumentedTest {
             }
             screenshot.recycle()
             assertTrue(file.isFile && file.length() > 1000)
+
+            // connectedDebugAndroidTest may uninstall the application after testing,
+            // deleting /sdcard/Android/data/... before the runner can pull it.
+            // The test-only UI automation shell writes an independent emulator PNG.
+            // This does not grant storage permissions to the application APK.
+            val exported = "/sdcard/Download/compromisso-home.png"
+            val copyResult = instrumentation.uiAutomation.executeShellCommand(
+                "sh -c 'screencap -p $exported && wc -c < $exported'"
+            )
+            val output = android.os.ParcelFileDescriptor.AutoCloseInputStream(copyResult)
+                .bufferedReader()
+                .use { it.readText().trim() }
+            check((output.toLongOrNull() ?: 0) > 1000L) {
+                "Preview export failed: $output"
+            }
         }
     }
 }
