@@ -1,5 +1,7 @@
 package dev.compromisso.app.ui
 
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -21,8 +23,9 @@ fun OnboardingScreen(onContinue: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(horizontal = 28.dp, vertical = 36.dp),
-        verticalArrangement = Arrangement.SpaceBetween,
+        verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
             Text(
@@ -32,12 +35,12 @@ fun OnboardingScreen(onContinue: () -> Unit) {
                 fontWeight = FontWeight.Bold,
             )
             Text(
-                text = "Um cadeado, não um espião.",
+                text = "Um compromisso com a liberdade.",
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.SemiBold,
             )
             Text(
-                text = "Você escolhe o que bloquear. O filtro funciona localmente no aparelho e não registra seu histórico de navegação.",
+                text = "Fé, disciplina e escolhas conscientes. Você decide o que bloquear no seu celular, sem vigilância ou histórico de navegação.",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -46,15 +49,15 @@ fun OnboardingScreen(onContinue: () -> Unit) {
 
             OnboardingPoint(
                 title = "Proteção padrão",
-                text = "Usa uma VPN local para filtrar domínios. O Android pedirá sua autorização uma vez.",
+                text = "Uma VPN local filtra DNS convencional. Consultas permitidas usam DNS criptografado externo; o Android pedirá autorização.",
             )
             OnboardingPoint(
                 title = "Pessoa de confiança",
                 text = "No Modo Compromisso, pausar a proteção ou afrouxar regras exige o PIN definido por outra pessoa.",
             )
             OnboardingPoint(
-                title = "Proteção reforçada",
-                text = "Opcional. Exige provisionamento especial do Android como Device Owner e será configurada separadamente.",
+                title = "Proteção reforçada ainda indisponível",
+                text = "Always-on e Lockdown estão desabilitados: esta versão não intercepta todo o tráfego.",
             )
             OnboardingPoint(
                 title = "Limite real",
