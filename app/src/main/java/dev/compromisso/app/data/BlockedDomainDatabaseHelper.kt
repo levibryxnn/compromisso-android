@@ -14,7 +14,13 @@ class BlockedDomainDatabaseHelper(
     override fun onConfigure(db: SQLiteDatabase) {
         super.onConfigure(db)
         db.setForeignKeyConstraintsEnabled(true)
-        db.execSQL("PRAGMA secure_delete=ON")
+        // This PRAGMA returns a result row. Android execSQL rejects statements that
+        // return rows; use rawQuery and verify that secure deletion was enabled.
+        db.rawQuery("PRAGMA secure_delete=ON", null).use { cursor ->
+            check(cursor.moveToFirst() && cursor.getInt(0) == 1) {
+                "Não foi possível habilitar a exclusão segura do SQLite"
+            }
+        }
     }
 
     override fun onCreate(db: SQLiteDatabase) {
