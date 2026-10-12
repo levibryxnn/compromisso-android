@@ -3,10 +3,19 @@
     android:height="48dp"
     android:viewportWidth="48"
     android:viewportHeight="48">
-    <path
-        android:fillColor="#0FA66E"
-        android:pathData="M24,3 L40,9 V21 C40,32 33.1,41.1 24,45 C14.9,41.1 8,32 8,21 V9 Z" />
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M21.3,29.8 L15.9,24.4 L18.7,21.6 L21.3,24.2 L29.8,15.7 L32.6,18.5 Z" />
+    <!-- Navy ground -->
+    <path android:fillColor="#0B192A"
+        android:pathData="M10,3 L38,3 Q45,3 45,10 L45,38 Q45,45 38,45 L10,45 Q3,45 3,38 L3,10 Q3,3 10,3 Z"/>
+    <!-- C: commitment, an open path rather than a lock or generic power symbol -->
+    <path android:fillColor="#00000000" android:strokeColor="#EAC394"
+        android:strokeWidth="3.7" android:strokeLineCap="round"
+        android:pathData="M34,13 C31,10 27,8.5 23,8.5 C14,8.5 8.5,15.5 8.5,24 C8.5,32.5 15,39.5 23,39.5 C28,39.5 31.5,37.5 34,35"/>
+    <!-- Christ at center -->
+    <path android:fillColor="#00000000" android:strokeColor="#F8FAFC"
+        android:strokeWidth="3" android:strokeLineCap="round"
+        android:pathData="M23,14 L23,30 M17,21 L29,21"/>
+    <!-- Way forward, incorporated into the letter C -->
+    <path android:fillColor="#00000000" android:strokeColor="#EAC394"
+        android:strokeWidth="2.3" android:strokeLineCap="round"
+        android:pathData="M16,42 C20,33 25,29 31,30"/>
 </vector>
