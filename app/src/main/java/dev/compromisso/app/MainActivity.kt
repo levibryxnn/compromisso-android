@@ -38,7 +38,7 @@ import dev.compromisso.app.security.SecurityConfigStore
 import dev.compromisso.app.security.TrustedPinManager
 import dev.compromisso.app.ui.AddDomainDialog
 import dev.compromisso.app.ui.CompromissoTheme
-import dev.compromisso.app.ui.HomeScreen
+import dev.compromisso.app.ui.PremiumHomeScreen
 import dev.compromisso.app.ui.HomeUiState
 import dev.compromisso.app.ui.OnboardingScreen
 import dev.compromisso.app.ui.PinSetupDialog
@@ -125,7 +125,7 @@ class MainActivity : ComponentActivity() {
                             showOnboarding = false
                         }
                     } else {
-                        HomeScreen(
+                        PremiumHomeScreen(
                             state = uiState,
                             verse = DailyVerseCatalog.forDate(LocalDate.now()),
                             onProtectionToggle = ::onProtectionToggle,
