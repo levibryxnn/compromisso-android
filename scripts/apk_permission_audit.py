@@ -14,6 +14,11 @@ ALLOWED = {
     'android.permission.HIDE_OVERLAY_WINDOWS',
 }
 
+# AndroidX Core declares a signature-protected, app-scoped permission to
+# restrict delivery to dynamically registered, non-exported receivers.
+# It does not permit access to any other app's data.
+ANDROIDX_INTERNAL = 'dev.compromisso.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'
+
 def parse_permissions(aapt_output: str) -> set[str]:
     return set(re.findall(r"uses-permission(?:-sdk-23)?:\s+name='([^']+)'", aapt_output))
 
@@ -31,8 +36,10 @@ def main() -> int:
         print('APK_SECURITY_GATE_FAILED: aapt failed')
         return 2
     actual = parse_permissions(result.stdout)
-    if actual != ALLOWED:
-        print(f'APK_SECURITY_GATE_FAILED: unexpected={sorted(actual - ALLOWED)}, missing={sorted(ALLOWED - actual)}')
+    unexpected = actual - ALLOWED - {ANDROIDX_INTERNAL}
+    missing = ALLOWED - actual
+    if unexpected or missing:
+        print(f'APK_SECURITY_GATE_FAILED: unexpected={sorted(unexpected)}, missing={sorted(missing)}')
         return 1
     print('APK_SECURITY_PERMISSIONS_OK: declared APK permissions match least-privilege allowlist')
     return 0
